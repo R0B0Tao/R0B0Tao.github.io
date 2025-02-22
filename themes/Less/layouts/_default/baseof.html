@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.Language.Lang }}">
+<head>
+    {{ partial "head.html" . }}
+    <style>
+        /* 定义常量 */
+        :root {
+            --sidebar-width: 150px;
+            --sidebar-collapsed: 15px;
+            --transition-time: 0.3s;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        :root[class~="dark"] {
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar-wrapper {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .sidebar-trigger {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: var(--sidebar-collapsed);
+            pointer-events: auto;
+            z-index: 52;
+            background-color: var(--bg-secondary);
+            opacity: 0;
+            transition: opacity var(--transition-time) ease;
+        }
+
+        .page-single .sidebar-trigger {
+            opacity: 0.5;
+        }
+
+        .sidebar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: var(--sidebar-width);
+            transition: all var(--transition-time) ease;
+            pointer-events: auto;
+            z-index: 51;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            box-shadow: 2px 0 10px var(--shadow-color);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .main-content {
+            transition: margin-left var(--transition-time) ease;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .page-single .sidebar {
+            transform: translateX(
+                    calc(var(--sidebar-collapsed) - var(--sidebar-width))
+            );
+        }
+
+        .page-single .main-content {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+        .page-single .sidebar-wrapper:hover .sidebar {
+            transform: translateX(0);
+        }
+
+        .sidebar-content {
+            width: 100%;
+            height: 100%;
+            opacity: 1;
+            transition: opacity var(--transition-time) ease;
+            color: var(--text-primary);
+            background-color: var(--bg-secondary);
+        }
+
+        .page-single .sidebar:not(:hover) .sidebar-content {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-wrapper {
+                width: var(--sidebar-width);
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                background-color: var(--bg-secondary);
+            }
+
+            .page-single .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+            }
+
+            .sidebar-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                opacity: 0;
+                visibility: hidden;
+                transition: all var(--transition-time) ease;
+                z-index: 49;
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
+            }
+
+            .sidebar-wrapper.active .sidebar {
+                transform: translateX(0);
+            }
+
+            .sidebar-wrapper.active + .sidebar-overlay {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+
+        /* 添加滚动条样式 */
+        .sidebar-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar-content::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        .sidebar-content::-webkit-scrollbar-thumb {
+            background: var(--text-secondary);
+            border-radius: 3px;
+        }
+
+        .sidebar-content::-webkit-scrollbar-thumb:hover {
+            background: var(--brand-color);
+        }
+    </style>
+</head>
+<body class="{{ if not .IsHome }}page-single{{ end }} bg-[var(--bg-primary)]">
+<div class="sidebar-wrapper">
+    <div class="sidebar-trigger"></div>
+    <div class="sidebar">
+        <div class="sidebar-content overflow-y-auto">
+            {{ partial "sidebar.html" . }}
+        </div>
+    </div>
+</div>
+
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<main class="main-content flex-1 ml-[150px]">
+    {{ block "main" . }}{{ end }}
+</main>
+</body>
+
+<script>
+    function toggleTheme() {
+        if (document.documentElement.classList.contains("dark")) {
+            document.documentElement.classList.remove("dark");
+            localStorage.theme = "light";
+        } else {
+            document.documentElement.classList.add("dark");
+            localStorage.theme = "dark";
+        }
+    }
+
+    if (
+        localStorage.theme === "dark" ||
+        (!("theme" in localStorage) &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches)
+    ) {
+        document.documentElement.classList.add("dark");
+    } else {
+        document.documentElement.classList.remove("dark");
+    }
+
+    function toggleSidebar() {
+        const sidebarWrapper = document.querySelector(".sidebar-wrapper");
+        if (window.innerWidth <= 768) {
+            sidebarWrapper.classList.toggle("active");
+        }
+    }
+
+    window.addEventListener("resize", () => {
+        const sidebarWrapper = document.querySelector(".sidebar-wrapper");
+        if (window.innerWidth > 768) {
+            sidebarWrapper.classList.remove("active");
+        }
+    });
+
+    document.querySelector(".sidebar-content").addEventListener(
+        "touchmove",
+        (e) => {
+            if (window.innerWidth <= 768) {
+                e.stopPropagation();
+            }
+        },
+        {passive: true}
+    );
+</script>
+</html>

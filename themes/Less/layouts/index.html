@@ -1,0 +1,11 @@
+{{ define "main" }}
+<div class="flex flex-col"> <!-- 改用 flex-col -->
+    <div class="flex-1">
+        <div class="grid gap-6 p-6">
+            {{ range .Site.RegularPages }}
+            {{ partial "article_card.html" . }}
+            {{ end }}
+        </div>
+    </div>
+</div>
+{{ end }}

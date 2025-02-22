@@ -1,0 +1,25 @@
+<article class="bg-[var(--bg-secondary)] rounded-lg shadow-sm border border-[var(--border-color)] overflow-hidden">
+    <!-- 上半部分：标题和日期 -->
+    <div class="h-14 p-4 border-b border-[var(--border-color)]">
+        <div class="flex justify-between items-center h-full">
+            <h2 class="text-xl font-semibold text-[var(--text-primary)] hover:text-[var(--brand-color)] transition-colors truncate">
+                <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+            </h2>
+            <div class="text-sm text-[var(--text-secondary)] flex gap-4">
+                <div>Posted: {{ .Date.Format "06/01/02" }}</div>
+                {{ if ne .Lastmod .Date }}
+                <div>Updated: {{ .Lastmod.Format "06/01/02" }}</div>
+                {{ end }}
+            </div>
+        </div>
+    </div>
+
+    <!-- 下半部分：摘要 -->
+    <div class="p-4 relative">
+        <div class="text-[var(--text-secondary)] line-clamp-5">
+            {{ .Summary }}
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[var(--bg-secondary)] to-transparent">
+        </div>
+    </div>
+</article>

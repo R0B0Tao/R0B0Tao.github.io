@@ -1,0 +1,63 @@
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>
+    {{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{
+    end }}
+</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+    :root {
+        --sidebar-width: 150px;
+    }
+
+    body {
+        font-family: "Inter", sans-serif;
+    }
+
+    /* Scrollbar styles */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+</style>
+
+<style>
+    :root {
+        /* Light mode */
+        --bg-primary: #F5F5F5;
+        --bg-secondary: #FFFFFF;
+        --bg-tertiary: #EFEFEF;
+        --text-primary: #000000;
+        --text-secondary: #666666;
+        --text-tertiary: #FFFFFF;
+        --border-color: #E5E5E5;
+        --brand-color: #9670d8;
+    }
+
+    :root[class~="dark"] {
+        /* Dark mode - iOS style */
+        --bg-primary: #161618;
+        --bg-secondary: #1e1e20;
+        --bg-tertiary: #424243;
+        --text-primary: #FFFFFF;
+        --text-secondary: #a1a1a1;
+        --text-tertiary: #6c6c6c;
+        --border-color: #38383A;
+        --brand-color: #461375;
+    }
+</style>

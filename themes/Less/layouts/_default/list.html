@@ -1,0 +1,13 @@
+{{ define "main" }}
+<!-- 文章列表区域 -->
+<section>
+    <!-- 遍历当前页面下的所有子页面（文章） -->
+    {{ range .Pages }}
+    <!--
+        引入文章卡片模板
+        将当前文章上下文 (.) 传递给 article_card.html 模板
+        每篇文章都会生成一个卡片样式的预览
+    -->
+    {{ partial "article_card.html" . }}
+    {{ end }}
+</section>

@@ -1,0 +1,12 @@
+name = "Less"
+license = "MIT"
+# licenselink = "https://github.com/yourname/TestTheme/blob/master/LICENSE"
+description = "A clean and minimal Hugo theme"
+# homepage = "https://github.com/yourname/TestTheme"
+tags = ["blog", "minimal", "responsive"]
+features = ["blog", "responsive"]
+min_version = "0.41.0"
+
+[author]
+name = "R0B0Tao"
+homepage = "https://github.com/R0B0Tao"

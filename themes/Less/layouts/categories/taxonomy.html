@@ -1,0 +1,65 @@
+{{ define "main" }}
+<div class="flex">
+    <!-- 左侧主要内容区域 -->
+    <div class="flex-1 p-6">
+        <!-- 顶部导航和标题区域 -->
+        <div class="mb-6">
+            <!-- 返回主页按钮 -->
+            <a href="/"
+               class="inline-flex items-center text-[var(--text-secondary)] hover:text-[var(--ios-brand)] mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+                <span>Back</span>
+            </a>
+            <!-- 分类标题 -->
+            <h1 class="text-2xl font-bold text-[var(--text-primary)]">
+                {{ .Title }}
+            </h1>
+        </div>
+
+        <!-- 文章列表容器 -->
+        <div class="space-y-6">
+            {{ range .Pages }}
+            <!-- 文章卡片 -->
+            <article
+                    class="bg-[var(--bg-secondary)] rounded-lg shadow-sm border border-[var(--border-color)] overflow-hidden">
+                <!-- 上半部分：标题和日期 -->
+                <div class="h-14 p-4 border-b border-[var(--border-color)]">
+                    <div class="flex justify-between items-center h-full">
+                        <h2 class="text-xl font-semibold text-[var(--text-primary)] hover:text-[var(--ios-brand)] transition-colors truncate">
+                            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                        </h2>
+                        <div class="text-sm text-[var(--text-secondary)] flex gap-4">
+                            <div>Posted: {{ .Date.Format "06/01/02" }}</div>
+                            {{ if ne .Lastmod .Date }}
+                            <div>Updated: {{ .Lastmod.Format "06/01/02" }}</div>
+                            {{ end }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 下半部分：摘要 -->
+                <div class="p-4 relative">
+                    <div class="text-[var(--text-secondary)] line-clamp-5">
+                        {{ .Summary }}
+                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[var(--bg-secondary)] to-transparent">
+                    </div>
+                </div>
+            </article>
+            {{ end }}
+        </div>
+
+        <!-- 底部年月显示 -->
+        <div class="mt-8 text-right">
+            <div class="text-xs font-medium text-[var(--text-secondary)]">
+                <p>Powered by Hugo</p>
+                <p>&copy; {{ now.Format "2006" }} {{ .Site.Title }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{{ end }}

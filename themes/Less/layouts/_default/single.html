@@ -1,0 +1,179 @@
+{{ define "main" }}
+<div class="flex">
+    <!-- 左侧边栏（目录大纲） -->
+    <div class="w-48 border-r border-[var(--border-color)] h-screen sticky top-0 bg-[var(--bg-primary)] backdrop-blur-md">
+        <div class="p-4 overflow-y-auto h-full custom-scrollbar">
+            <!-- 返回首页链接 -->
+            <a href="{{ .Site.BaseURL }}"
+               class="flex items-center space-x-2 text-[var(--text-secondary)] hover:text-[var(--brand-color)] mb-4 pb-4 border-b border-[var(--border-color)] transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                <span>Back</span>
+            </a>
+
+            <!-- 文章目录 -->
+            <div class="text-[var(--text-primary)] prose-a:text-[var(--text-secondary)] prose-a:no-underline hover:prose-a:text-[var(--brand-color)] prose-a:transition-colors">
+                {{ .TableOfContents }}
+            </div>
+
+            <!-- 文章标签列表 -->
+            <div class="mt-4 flex flex-wrap gap-2">
+                {{ range .Params.tags }}
+                <a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}"
+                class="text-xs px-2 py-1 bg-[var(--bg-tertiary)] text-[var(--text-secondary)] rounded-full hover:bg-[var(--brand-color)] hover:text-[var(--text-primary)] transition-all duration-300">
+                #{{ . }}
+                </a>
+                {{ end }}
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <article class="flex-1 mx-auto px-6 py-8 bg-[var(--bg-secondary)]">
+        <!-- 文章头部信息 -->
+        <header class="mb-8 fade-up">
+            <h1 class="text-3xl font-bold text-[var(--text-primary)] mb-4">{{ .Title }}</h1>
+            <div class="text-sm text-[var(--text-secondary)] flex flex-wrap gap-4">
+                <span>Posted: {{ .Date.Format "2006/01/02" }}</span>
+                {{ if ne .Lastmod .Date }}
+                <span>Last Edit: {{ .Lastmod.Format "2006/01/02" }}</span>
+                {{ end }}
+            </div>
+        </header>
+
+        <!-- 文章主体内容 -->
+        <div class="prose prose-neutral dark:prose-invert max-w-none
+                    prose-headings:text-[var(--text-primary)]
+                    prose-p:text-[var(--text-primary)]
+                    prose-strong:text-[var(--text-primary)]
+                    prose-em:text-[var(--text-primary)]
+                    prose-code:text-[var(--brand-color)]
+                    prose-a:text-[var(--brand-color)]
+                    prose-a:no-underline
+                    hover:prose-a:opacity-80">
+            {{ .Content }}
+        </div>
+
+        <!-- 评论区域 -->
+        {{ partial "comments.html" . }}
+
+    </article>
+
+    <!-- 右侧边栏（相关阅读） -->
+    <div class="w-48 border-l border-[var(--border-color)] h-screen sticky top-0 bg-[var(--bg-primary)] backdrop-blur-md">
+        <div class="p-4 overflow-y-auto h-full custom-scrollbar">
+            <h3 class="font-medium text-[var(--text-primary)] mb-4">Related reading</h3>
+            <ul class="space-y-3">
+                {{ $related := .Site.RegularPages.Related . | first 3 }}
+                {{ range $related }}
+                <li>
+                    <a href="{{ .RelPermalink }}"
+                       class="text-sm text-[var(--text-secondary)] hover:text-[var(--brand-color)] transition-colors block">
+                        {{ .Title }}
+                    </a>
+                </li>
+                {{ end }}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- 添加样式和脚本 -->
+<style>
+    .fade-up {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .fade-up.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* 为文章内容添加渐变效果 */
+    .prose > * {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .prose > *.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* 自定义滚动条 */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: var(--bg-secondary);
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: var(--text-secondary);
+        border-radius: 3px;
+    }
+</style>
+
+<script>
+    // 初始化动画
+    document.addEventListener('DOMContentLoaded', function() {
+        // 获取所有需要动画的元素
+        const fadeElements = document.querySelectorAll('.fade-up');
+        const contentElements = document.querySelectorAll('.prose > h1, .prose > h2, .prose > h3, .prose > h4, .prose > h5, .prose > h6, .prose > p, .prose > ul, .prose > ol, .prose > blockquote, .prose > pre, .prose > table');
+
+        // 创建 Intersection Observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // 可选：只触发一次动画
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -10% 0px'
+        });
+
+        // 观察所有元素
+        fadeElements.forEach(el => observer.observe(el));
+        contentElements.forEach(el => observer.observe(el));
+
+        // 给文章标题添加立即显示的效果
+        const header = document.querySelector('header');
+        if (header) {
+            setTimeout(() => {
+                header.classList.add('visible');
+            }, 100);
+        }
+    });
+</script>
+
+<script>
+    function setGiscusTheme(theme) {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            'https://giscus.app'
+        );
+    }
+
+    // 监听主题切换
+    const observer = new MutationObserver(() => {
+        const isDark = document.documentElement.classList.contains('dark');
+        setGiscusTheme(isDark ? 'dark' : 'light');
+    });
+
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+    // 初始化主题
+    const isDark = document.documentElement.classList.contains('dark');
+    setGiscusTheme(isDark ? 'dark' : 'light');
+</script>
+{{ end }}
